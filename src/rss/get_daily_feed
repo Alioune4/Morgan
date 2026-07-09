@@ -1,0 +1,51 @@
+from datetime import datetime, timedelta, timezone
+from time import mktime
+import feedparser
+
+from contract_objects.ai_daily_input import RSSEntryEssentials
+
+
+AGGREGATOR_LINKS = [
+     "https://news.ycombinator.com/rss",
+     "https://techcrunch.com/feed/",
+     "https://huggingface.co/blog/feed.xml",
+     "https://blog.pragmaticengineer.com/rss/",
+     "https://netflixtechblog.com/feed",
+     "https://blog.dataiku.com/rss.xml",
+     "https://www.datadoghq.com/blog/engineering/rss.xml"
+]
+
+
+def get_daily_feed():
+     daily_feed = []
+     for link in AGGREGATOR_LINKS:
+          feed = feedparser.parse(link)
+          for entry in feed.entries:
+               published_date = datetime.fromtimestamp(mktime(entry.published_parsed), timezone.utc)
+               if published_date <  datetime.now(timezone.utc) - timedelta(days= 1):
+                    print("Skipped")
+                    continue
+               print("OK")
+
+               summary_for_ai = get_entry_essentials(entry)
+               daily_feed.append(summary_for_ai)
+     
+     return daily_feed
+               
+
+
+def get_entry_essentials(entry: feedparser.FeedParserDict):
+     try:
+          return RSSEntryEssentials(
+               entry.id,
+               entry.link,
+               entry.published_parsed,
+               entry.title,
+               author=entry.get("author"),
+               content=entry.get("content"),
+               summary=entry.get("summary"),
+               tags=entry.get("tags"),
+          )
+     except:
+          # print
+          return None
