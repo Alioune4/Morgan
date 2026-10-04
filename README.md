@@ -1,16 +1,18 @@
 # Morgan
 
-Morgan est une newsletter tech quotidienne et personnalisée, publiée sur Discord.
+**English** | [Français](README.fr.md)
 
-Chaque jour, Morgan récupère les articles des dernières 24 h depuis des flux RSS, demande à un LLM de sélectionner et de résumer ceux qui te concernent, puis poste le résultat dans un salon Discord.
+Morgan is a personalized daily tech newsletter, posted to Discord.
 
-Tes préférences (qui tu es, tes sujets, le format, les sources) vivent dans un simple fichier texte, `profile.md`, que tu écris comme tu veux.
+Every day, Morgan fetches the last 24 hours of articles from RSS feeds, asks an LLM to pick and summarize the ones relevant to you, and posts the result to a Discord channel.
 
-## Prérequis
+Your preferences (who you are, your topics, the format, your sources) live in a plain text file, `profile.md`, written however you like.
 
-- Python 3.10 ou plus récent
-- Une clé API Gemini (gratuite) : <https://aistudio.google.com/apikey>
-- Un serveur Discord sur lequel tu peux ajouter un bot
+## Requirements
+
+- Python 3.10 or newer
+- A Gemini API key (free): <https://aistudio.google.com/apikey>
+- A Discord server where you can add a bot
 
 ## Installation
 
@@ -23,66 +25,66 @@ cp .env.example .env
 cp profile.example.md profile.md
 ```
 
-## Créer le bot Discord
+## Create the Discord bot
 
-1. Va sur <https://discord.com/developers/applications> et clique sur **New Application**.
-2. Dans l'onglet **Bot**, clique sur **Reset Token** et copie le token : c'est ton `DISCORD_TOKEN`.
-3. Dans l'onglet **OAuth2 → URL Generator**, coche le scope `bot`, puis les permissions **View Channels** et **Send Messages**.
-4. Ouvre l'URL générée et ajoute le bot à ton serveur.
-5. Dans Discord, active le mode développeur (**Paramètres → Avancés → Mode développeur**), puis fais un clic droit sur le salon de ton choix → **Copier l'identifiant du salon** : c'est ton `DISCORD_CHANNEL_ID`.
+1. Go to <https://discord.com/developers/applications> and click **New Application**.
+2. In the **Bot** tab, click **Reset Token** and copy the token: this is your `DISCORD_TOKEN`.
+3. In the **OAuth2 → URL Generator** tab, check the `bot` scope, then the **View Channels** and **Send Messages** permissions.
+4. Open the generated URL and add the bot to your server.
+5. In Discord, enable developer mode (**Settings → Advanced → Developer Mode**), then right-click the channel you want → **Copy Channel ID**: this is your `DISCORD_CHANNEL_ID`.
 
 ## Configuration
 
 ### `.env`
 
 ```
-GEMINI_API_KEY=ta-clé-gemini
-DISCORD_TOKEN=le-token-du-bot
-DISCORD_CHANNEL_ID=l-id-du-salon
+GEMINI_API_KEY=your-gemini-key
+DISCORD_TOKEN=your-bot-token
+DISCORD_CHANNEL_ID=your-channel-id
 ```
 
-Options :
+Options:
 
-- `LLM_MODEL` : le modèle à utiliser, au format [LiteLLM](https://docs.litellm.ai/docs/providers) (par défaut `gemini/gemini-3.5-flash`). Pour un autre fournisseur, ajoute aussi sa clé API dans `.env`.
-- `PROFILE_PATH` : le chemin du profil (par défaut `profile.md` à la racine).
+- `LLM_MODEL`: the model to use, in [LiteLLM](https://docs.litellm.ai/docs/providers) format (default `gemini/gemini-3.5-flash`). For another provider, also add its API key to `.env`.
+- `PROFILE_PATH`: path to the profile (default `profile.md` at the project root).
 
-Ne commite jamais `.env` : il est déjà dans le `.gitignore`.
+Never commit `.env`: it is already in `.gitignore`.
 
 ### `profile.md`
 
-C'est là que tu personnalises ta newsletter. Écris-le librement : il est donné tel quel à l'IA.
+This is where you personalize your newsletter. Write it freely: it is passed as-is to the LLM.
 
-- Décris qui tu es (métier, niveau, stack) : l'IA s'en sert pour juger ce qui te concerne.
-- Liste ce qui t'intéresse et ce que tu ne veux pas voir.
-- Précise le format souhaité (langue, longueur, présentation).
-- Dans la section `## Sources`, mets une URL de flux RSS par ligne. Tu peux ajouter un commentaire après l'URL.
+- Describe who you are (job, level, stack): the LLM uses it to judge what matters to you.
+- List what interests you and what you don't want to see.
+- Describe the format you want (language, length, layout).
+- In the `## Sources` section, put one RSS feed URL per line. You can add a comment after the URL.
 
-Pour suivre une chaîne YouTube, utilise `https://www.youtube.com/feeds/videos.xml?channel_id=<ID de la chaîne>`.
+To follow a YouTube channel, use `https://www.youtube.com/feeds/videos.xml?channel_id=<channel ID>`.
 
-`profile.md` est ignoré par git : il reste privé.
+`profile.md` is ignored by git, so it stays private.
 
-## Lancer
+## Run
 
-Pour voir la newsletter dans le terminal sans rien publier :
+To print the newsletter in the terminal without posting anything:
 
 ```bash
 venv/bin/python src/main.py --dry-run
 ```
 
-Pour la publier sur Discord :
+To post it to Discord:
 
 ```bash
 venv/bin/python src/main.py
 ```
 
-## Envoi automatique chaque jour
+## Daily delivery
 
-### Avec GitHub Actions (recommandé)
+### With GitHub Actions (recommended)
 
-Pas besoin de garder une machine allumée : le workflow `.github/workflows/newsletter.yml` lance Morgan tous les jours à 8 h, heure de Paris.
+No need to keep a machine running: the `.github/workflows/newsletter.yml` workflow runs Morgan every day at 8:00 Paris time.
 
-1. Forke le dépôt.
-2. Dans **Settings → Secrets and variables → Actions**, crée ces secrets, ou fais-le avec la CLI `gh` :
+1. Fork the repository.
+2. In **Settings → Secrets and variables → Actions**, create these secrets, or use the `gh` CLI:
 
    ```bash
    gh secret set GEMINI_API_KEY
@@ -91,39 +93,41 @@ Pas besoin de garder une machine allumée : le workflow `.github/workflows/newsl
    gh secret set PROFILE < profile.md
    ```
 
-   `PROFILE` contient tout ton `profile.md`. Pense à le remettre à jour avec la même commande quand tu modifies ton profil.
-3. Optionnel : pour changer de modèle, crée une variable (pas un secret) `LLM_MODEL`.
-4. Dans l'onglet **Actions**, active les workflows s'ils sont désactivés sur ton fork.
-5. Pour tester, lance **Daily newsletter → Run workflow** : par défaut, l'option `dry_run` est cochée et la newsletter s'affiche dans les logs sans être publiée.
+   `PROFILE` holds your whole `profile.md`. Run the same command again whenever you change your profile.
+3. Optional: to change the model, create a variable (not a secret) named `LLM_MODEL`.
+4. In the **Actions** tab, enable workflows if they are disabled on your fork.
+5. To test, run **Daily newsletter → Run workflow**: the `dry_run` option is checked by default, so the newsletter is printed in the logs without being posted.
 
-L'heure de déclenchement de GitHub peut avoir quelques minutes de retard. Sur un dépôt public sans activité pendant 60 jours, GitHub désactive les tâches planifiées : il suffit de les réactiver depuis l'onglet **Actions**.
+GitHub may start scheduled runs a few minutes late. On a public repository with no activity for 60 days, GitHub disables scheduled workflows: re-enable them from the **Actions** tab.
 
-### Avec cron
+To use another time zone or time, edit the `cron` lines and the `TZ` / hour check in the workflow.
 
-Avec cron (Linux, macOS ou WSL), pour un envoi tous les jours à 8 h :
+### With cron
+
+With cron (Linux, macOS or WSL), to send it every day at 8:00:
 
 ```bash
 crontab -e
 ```
 
-puis ajoute la ligne suivante, en adaptant le chemin :
+then add this line, adjusting the path:
 
 ```
-0 8 * * * cd /chemin/vers/Morgan && { echo "=== $(date)"; venv/bin/python src/main.py; } >> logs/morgan.log 2>&1
+0 8 * * * cd /path/to/Morgan && { echo "=== $(date)"; venv/bin/python src/main.py; } >> logs/morgan.log 2>&1
 ```
 
-Crée le dossier `logs/` avant (`mkdir logs`). Les erreurs éventuelles seront dans `logs/morgan.log`.
+Create the `logs/` folder first (`mkdir logs`). Any errors will be in `logs/morgan.log`.
 
-L'heure suit le fuseau horaire de la machine. La machine doit être allumée à 8 h : si elle est éteinte, l'envoi du jour est sauté. Sous WSL, la distribution doit aussi être lancée, avec systemd activé (`systemd=true` dans `/etc/wsl.conf`).
+The time follows the machine's time zone. The machine must be on at 8:00, otherwise that day's newsletter is skipped. On WSL, the distribution must also be running, with systemd enabled (`systemd=true` in `/etc/wsl.conf`).
 
 ## Structure
 
 ```
 src/
-  main.py                  point d'entrée : RSS → IA → Discord
-  user_profile.py          lecture du profil et de ses sources
-  rss/get_daily_feed.py    récupération et nettoyage des articles des dernières 24 h
-  ai/                      génération de la newsletter via LiteLLM
-  discord_bot/bot.py       envoi dans le salon, découpé en messages de 2000 caractères
-  contract_objects/        structure d'un article
+  main.py                  entry point: RSS → LLM → Discord
+  user_profile.py          reads the profile and its sources
+  rss/get_daily_feed.py    fetches and cleans the last 24 hours of articles
+  ai/                      generates the newsletter through LiteLLM
+  discord_bot/bot.py       posts to the channel, split into 2000-character messages
+  contract_objects/        article data structure
 ```
