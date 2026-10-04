@@ -1,2 +1,5 @@
 feedparser==6.0.12
 sgmllib3k==1.0.0
+litellm==1.91.1
+discord.py==2.7.1
+python-dotenv==1.2.2
