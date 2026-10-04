@@ -77,6 +77,29 @@ venv/bin/python src/main.py
 
 ## Envoi automatique chaque jour
 
+### Avec GitHub Actions (recommandé)
+
+Pas besoin de garder une machine allumée : le workflow `.github/workflows/newsletter.yml` lance Morgan tous les jours à 8 h, heure de Paris.
+
+1. Forke le dépôt.
+2. Dans **Settings → Secrets and variables → Actions**, crée ces secrets, ou fais-le avec la CLI `gh` :
+
+   ```bash
+   gh secret set GEMINI_API_KEY
+   gh secret set DISCORD_TOKEN
+   gh secret set DISCORD_CHANNEL_ID
+   gh secret set PROFILE < profile.md
+   ```
+
+   `PROFILE` contient tout ton `profile.md`. Pense à le remettre à jour avec la même commande quand tu modifies ton profil.
+3. Optionnel : pour changer de modèle, crée une variable (pas un secret) `LLM_MODEL`.
+4. Dans l'onglet **Actions**, active les workflows s'ils sont désactivés sur ton fork.
+5. Pour tester, lance **Daily newsletter → Run workflow** : par défaut, l'option `dry_run` est cochée et la newsletter s'affiche dans les logs sans être publiée.
+
+L'heure de déclenchement de GitHub peut avoir quelques minutes de retard. Sur un dépôt public sans activité pendant 60 jours, GitHub désactive les tâches planifiées : il suffit de les réactiver depuis l'onglet **Actions**.
+
+### Avec cron
+
 Avec cron (Linux, macOS ou WSL), pour un envoi tous les jours à 8 h :
 
 ```bash

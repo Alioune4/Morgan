@@ -1,0 +1,57 @@
+name: Daily newsletter
+
+on:
+  schedule:
+    # GitHub cron runs in UTC: 6:00 UTC is 8:00 in Paris in summer, 7:00 UTC in winter.
+    # Both run, and the check below only lets the one at 8:00 Paris time through.
+    - cron: "0 6 * * *"
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print the newsletter instead of posting it"
+        type: boolean
+        default: true
+
+jobs:
+  newsletter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Europe/Paris
+    steps:
+      - name: Skip if it is not 8:00 in Paris
+        id: check
+        if: github.event_name == 'schedule'
+        run: |
+          if [ "$(date +%H)" != "08" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.skip != 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.skip != 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        if: steps.check.outputs.skip != 'true'
+        run: pip install -r requirements.txt
+
+      - name: Write profile
+        if: steps.check.outputs.skip != 'true'
+        env:
+          PROFILE: ${{ secrets.PROFILE }}
+        run: printf '%s\n' "$PROFILE" > profile.md
+
+      - name: Run newsletter
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+        run: python src/main.py ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '--dry-run' || '' }}
