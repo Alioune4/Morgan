@@ -27,7 +27,7 @@ Règles :
 
 def request_personalized_newsletter(entries: List[RSSEntryEssentials], profile: str) -> str:
     response = completion(
-        model=os.getenv("LLM_MODEL", DEFAULT_MODEL),
+        model=os.getenv("LLM_MODEL") or DEFAULT_MODEL,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT.format(profile=profile)},
             {"role": "user", "content": format_entries(entries)},
