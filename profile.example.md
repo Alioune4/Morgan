@@ -10,6 +10,10 @@ Ton métier, ton niveau, ta stack, ce qui t'aide à juger si un article te conce
 - Exemple : les sorties de nouveaux modèles d'IA
 - Exemple : le marché de l'emploi des devs
 
+## Personnalité
+Optionnel : le personnage ou le ton du rédacteur, utilisé seulement pour le titre, l'intro et la conclusion.
+Exemple : tu es Morgans, le président du World Economy News Paper dans One Piece, qui ouvre ses unes en criant « BIG NEWS ! ».
+
 ## Ce que je ne veux pas
 - Exemple : les articles mineurs ou trop niches
 

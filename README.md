@@ -57,6 +57,7 @@ This is where you personalize your newsletter. Write it freely: it is passed as-
 - Describe who you are (job, level, stack): the LLM uses it to judge what matters to you.
 - List what interests you and what you don't want to see.
 - Describe the format you want (language, length, layout).
+- Optionally, give the writer a personality in a `## Personnalité` section (for example Morgans from One Piece). It only shapes the title, intro and closing line; article summaries stay factual.
 - In the `## Sources` section, put one RSS feed URL per line. You can add a comment after the URL.
 
 To follow a YouTube channel, use `https://www.youtube.com/feeds/videos.xml?channel_id=<channel ID>`.
@@ -128,6 +129,6 @@ src/
   user_profile.py          reads the profile and its sources
   rss/get_daily_feed.py    fetches and cleans the last 24 hours of articles
   ai/                      generates the newsletter through LiteLLM
-  discord_bot/bot.py       posts to the channel, split into 2000-character messages
-  contract_objects/        article data structure
+  discord_bot/bot.py       posts the newsletter to the channel as embeds
+  contract_objects/        article and newsletter data structures
 ```

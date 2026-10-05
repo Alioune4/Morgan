@@ -57,6 +57,7 @@ C'est là que tu personnalises ta newsletter. Écris-le librement : il est donn�
 - Décris qui tu es (métier, niveau, stack) : l'IA s'en sert pour juger ce qui te concerne.
 - Liste ce qui t'intéresse et ce que tu ne veux pas voir.
 - Précise le format souhaité (langue, longueur, présentation).
+- Optionnel : donne une personnalité au rédacteur dans une section `## Personnalité` (par exemple Morgans de One Piece). Elle ne touche que le titre, l'intro et la conclusion ; les résumés restent factuels.
 - Dans la section `## Sources`, mets une URL de flux RSS par ligne. Tu peux ajouter un commentaire après l'URL.
 
 Pour suivre une chaîne YouTube, utilise `https://www.youtube.com/feeds/videos.xml?channel_id=<ID de la chaîne>`.
@@ -126,6 +127,6 @@ src/
   user_profile.py          lecture du profil et de ses sources
   rss/get_daily_feed.py    récupération et nettoyage des articles des dernières 24 h
   ai/                      génération de la newsletter via LiteLLM
-  discord_bot/bot.py       envoi dans le salon, découpé en messages de 2000 caractères
-  contract_objects/        structure d'un article
+  discord_bot/bot.py       envoi de la newsletter dans le salon sous forme d'embeds
+  contract_objects/        structures d'un article et de la newsletter
 ```
