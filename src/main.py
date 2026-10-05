@@ -25,7 +25,7 @@ def main():
 
     newsletter = request_personalized_newsletter(entries, profile)
     if args.dry_run:
-        print(newsletter)
+        print(newsletter.to_markdown())
         return
 
     asyncio.run(send_newsletter(newsletter))
