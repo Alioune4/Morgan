@@ -9,6 +9,7 @@ from contract_objects.newsletter import Newsletter
 
 
 DEFAULT_MODEL = "gemini/gemini-3.5-flash"
+DEFAULT_FALLBACK_MODELS = "gemini/gemini-3.8-flash,gemini/gemini-flash-latest"
 
 SYSTEM_PROMPT = """Tu es le rédacteur d'une newsletter tech quotidienne et personnelle, publiée sur Discord.
 Voici le profil du lecteur, écrit par lui-même. Suis ses préférences de sujets, de format et de langue.
@@ -37,16 +38,27 @@ Réponds uniquement avec un objet JSON de cette forme :
 
 
 def request_personalized_newsletter(entries: List[RSSEntryEssentials], profile: str) -> Newsletter:
-    response = completion(
-        model=os.getenv("LLM_MODEL") or DEFAULT_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT.format(profile=profile)},
-            {"role": "user", "content": format_entries(entries)},
-        ],
-        response_format={"type": "json_object"},
-        num_retries=3,
-    )
-    return Newsletter.from_dict(json.loads(response.choices[0].message.content))
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT.format(profile=profile)},
+        {"role": "user", "content": format_entries(entries)},
+    ]
+    fallbacks = os.getenv("LLM_FALLBACK_MODELS") or DEFAULT_FALLBACK_MODELS
+    models = [os.getenv("LLM_MODEL") or DEFAULT_MODEL] + [m.strip() for m in fallbacks.split(",") if m.strip()]
+
+    for model in models:
+        try:
+            response = completion(
+                model=model,
+                messages=messages,
+                response_format={"type": "json_object"},
+                num_retries=3,
+            )
+        except Exception as e:
+            if model == models[-1]:
+                raise
+            print(f"{model} failed ({type(e).__name__}), falling back to the next model")
+            continue
+        return Newsletter.from_dict(json.loads(response.choices[0].message.content))
 
 
 def format_entries(entries: List[RSSEntryEssentials]) -> str:

@@ -46,6 +46,7 @@ DISCORD_CHANNEL_ID=l-id-du-salon
 Options :
 
 - `LLM_MODEL` : le modèle à utiliser, au format [LiteLLM](https://docs.litellm.ai/docs/providers) (par défaut `gemini/gemini-3.5-flash`). Pour un autre fournisseur, ajoute aussi sa clé API dans `.env`.
+- `LLM_FALLBACK_MODELS` : les modèles de secours, séparés par des virgules, essayés dans l'ordre si le modèle principal est indisponible (par défaut `gemini/gemini-3.8-flash,gemini/gemini-flash-latest`).
 - `PROFILE_PATH` : le chemin du profil (par défaut `profile.md` à la racine).
 
 Ne commite jamais `.env` : il est déjà dans le `.gitignore`.

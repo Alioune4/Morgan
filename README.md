@@ -46,6 +46,7 @@ DISCORD_CHANNEL_ID=your-channel-id
 Options:
 
 - `LLM_MODEL`: the model to use, in [LiteLLM](https://docs.litellm.ai/docs/providers) format (default `gemini/gemini-3.5-flash`). For another provider, also add its API key to `.env`.
+- `LLM_FALLBACK_MODELS`: comma-separated models tried in order when the main one is unavailable (default `gemini/gemini-3.8-flash,gemini/gemini-flash-latest`).
 - `PROFILE_PATH`: path to the profile (default `profile.md` at the project root).
 
 Never commit `.env`: it is already in `.gitignore`.
